@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Candidate Profile{% endblock %}
+{% block content %}
+<h1 class="h3 mb-3">Candidate Profile</h1>
+<div class="card">
+  <div class="card-body">
+    <form method="post" class="row g-3">
+      <div class="col-md-6">
+        <label class="form-label">Phone</label>
+        <input class="form-control" name="phone" value="{{ profile.phone or '' }}">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Date of Birth</label>
+        <input class="form-control" type="date" name="date_of_birth" value="{{ profile.date_of_birth or '' }}">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Identity Number</label>
+        <input class="form-control" name="identity_number" value="{{ profile.identity_number or '' }}" placeholder="e.g. ID-1001">
+      </div>
+      <div class="col-12">
+        <label class="form-label">Address</label>
+        <textarea class="form-control" rows="3" name="address" placeholder="Include mock address ID, e.g. ADDR-4001">{{ profile.address or '' }}</textarea>
+      </div>
+      <div class="col-12">
+        <label class="form-label">Education Details</label>
+        <textarea class="form-control" rows="3" name="education_details" placeholder="Include mock education ID, e.g. EDU-2001">{{ profile.education_details or '' }}</textarea>
+      </div>
+      <div class="col-12">
+        <label class="form-label">Employment Details</label>
+        <textarea class="form-control" rows="3" name="employment_details" placeholder="Include mock employment ID, e.g. EMP-3001">{{ profile.employment_details or '' }}</textarea>
+      </div>
+      <div class="col-12">
+        <button class="btn btn-primary" type="submit">Save Profile</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

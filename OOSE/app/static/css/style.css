@@ -1,0 +1,61 @@
+body {
+  background: linear-gradient(180deg, #f8fbff 0%, #eef4f8 100%);
+}
+
+.card-metric {
+  border: none;
+  box-shadow: 0 4px 12px rgba(7, 38, 73, 0.08);
+}
+
+.metric-value {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.notification-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+  border-bottom: 1px solid #eceff5;
+  padding: 0.85rem 0;
+}
+
+.notification-item:last-child {
+  border-bottom: none;
+}
+
+.notification-unread {
+  background: #f3f8ff;
+  border-radius: 0.4rem;
+  padding-left: 0.6rem;
+  padding-right: 0.6rem;
+}
+
+.report-body {
+  white-space: pre-wrap;
+  background: #f8f9fb;
+  border: 1px solid #e5e9f2;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  max-height: 560px;
+  overflow-y: auto;
+}
+
+.report-narrative {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.55;
+  font-size: 0.95rem;
+  color: #1e2c3d;
+}
+
+.report-header-card {
+  border: none;
+  box-shadow: 0 4px 14px rgba(19, 38, 71, 0.09);
+}
+
+.report-metric-card {
+  border: 1px solid #e6ebf3;
+  box-shadow: 0 2px 8px rgba(30, 53, 90, 0.06);
+}

@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}File Too Large{% endblock %}
+{% block content %}
+<div class="text-center py-5">
+  <h1 class="display-6">Upload Limit Exceeded</h1>
+  <p>The selected file is larger than the configured upload size limit.</p>
+  <a href="{{ url_for('candidate.documents') }}" class="btn btn-primary">Back to Documents</a>
+</div>
+{% endblock %}

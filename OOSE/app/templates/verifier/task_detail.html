@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% block title %}Verifier Task #{{ verification_request.id }}{% endblock %}
+{% block content %}
+<h1 class="h3 mb-3">Verification Task #{{ verification_request.id }}</h1>
+<div class="card mb-3">
+  <div class="card-body">
+    <p><strong>Candidate:</strong> {{ verification_request.candidate_profile.user.full_name }} ({{ verification_request.candidate_profile.user.email }})</p>
+    <p><strong>Current Request Status:</strong> <span class="badge text-bg-primary">{{ verification_request.status.value }}</span></p>
+    <form method="post" action="{{ url_for('verifier.resend_email', request_id=verification_request.id) }}" class="mt-2">
+      <button class="btn btn-sm btn-outline-primary" type="submit">Resend Email</button>
+    </form>
+  </div>
+</div>
+
+<div class="card mb-3">
+  <div class="card-body">
+    <h2 class="h5 mb-3">Candidate Documents</h2>
+    <div class="table-responsive">
+      <table class="table table-striped align-middle">
+        <thead><tr><th>Type</th><th>Filename</th><th>AI Confidence</th><th>AI Summary</th><th>Uploaded</th><th></th></tr></thead>
+        <tbody>
+          {% for doc in verification_request.candidate_profile.documents %}
+          <tr>
+            <td>{{ doc.doc_type }}</td>
+            <td>{{ doc.original_filename }}</td>
+            <td>
+              {% if doc.analysis %}
+                {{ '%.2f'|format(doc.analysis.confidence) }}
+                {% if doc.analysis.needs_manual_review %}
+                  <span class="badge text-bg-warning ms-1">manual</span>
+                {% else %}
+                  <span class="badge text-bg-success ms-1">ok</span>
+                {% endif %}
+              {% else %}
+                <span class="badge text-bg-secondary">pending</span>
+              {% endif %}
+            </td>
+            <td>
+              {% if doc.analysis %}
+                <div>{{ doc.analysis.summary }}</div>
+                <details class="mt-1">
+                  <summary class="text-muted">AI extracted text preview</summary>
+                  <pre class="small mb-0">{{ (doc.analysis.extracted_text or '')[:500] }}</pre>
+                </details>
+              {% else %}
+                <span class="text-muted">No AI output yet</span>
+              {% endif %}
+            </td>
+            <td>{{ doc.uploaded_at.strftime('%Y-%m-%d %H:%M') }}</td>
+            <td>
+              <a class="btn btn-sm btn-outline-secondary" target="_blank" rel="noopener noreferrer" href="{{ url_for('verifier.document_view', request_id=verification_request.id, document_id=doc.id) }}">
+                View
+              </a>
+              <a class="btn btn-sm btn-outline-primary" href="{{ url_for('verifier.document_download', request_id=verification_request.id, document_id=doc.id) }}">
+                Download
+              </a>
+            </td>
+          </tr>
+          {% else %}
+          <tr><td colspan="6" class="text-muted">No documents uploaded by candidate yet.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+{% for stage in verification_request.stages %}
+<div class="card mb-3">
+  <div class="card-body">
+    <h2 class="h5">{{ stage.stage_type.value|stage_label }} Verification</h2>
+    <p><strong>Current Stage Status:</strong> <span class="badge text-bg-info">{{ stage.status.value }}</span></p>
+    <form method="post" action="{{ url_for('verifier.update_stage', request_id=verification_request.id, stage_id=stage.id) }}" class="row g-3">
+      <div class="col-md-4">
+        <label class="form-label">Update Status</label>
+        <select class="form-select" name="status" required>
+          <option value="in_progress" {% if stage.status.value == 'in_progress' %}selected{% endif %}>in_progress</option>
+          <option value="verified" {% if stage.status.value == 'verified' %}selected{% endif %}>verified</option>
+          <option value="rejected" {% if stage.status.value == 'rejected' %}selected{% endif %}>rejected</option>
+        </select>
+      </div>
+      <div class="col-md-8">
+        <label class="form-label">Comments</label>
+        <input class="form-control" name="comments" value="{{ stage.comments or '' }}" placeholder="Add verification notes">
+      </div>
+      <div class="col-12">
+        <button class="btn btn-primary" type="submit">Submit Stage Update</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endfor %}
+{% endblock %}

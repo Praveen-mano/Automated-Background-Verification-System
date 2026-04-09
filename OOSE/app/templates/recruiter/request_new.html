@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Create Verification Request{% endblock %}
+{% block content %}
+<h1 class="h3 mb-3">Create Verification Request</h1>
+<div class="card">
+  <div class="card-body">
+    <form method="post" class="row g-3">
+      <div class="col-md-6">
+        <label class="form-label">Candidate</label>
+        <select class="form-select" name="candidate_profile_id" required>
+          <option value="">Select Candidate</option>
+          {% for candidate in candidates %}
+          <option value="{{ candidate.id }}">{{ candidate.user.full_name }} ({{ candidate.user.email }})</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Verifier</label>
+        <select class="form-select" name="verifier_id" required>
+          <option value="">Select Verifier</option>
+          {% for verifier in verifiers %}
+          <option value="{{ verifier.id }}">{{ verifier.full_name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-12">
+        <button class="btn btn-primary" type="submit">Create Request</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

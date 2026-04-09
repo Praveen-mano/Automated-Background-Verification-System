@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Candidates{% endblock %}
+{% block content %}
+<h1 class="h3 mb-3">Registered Candidates</h1>
+<div class="card">
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table table-striped align-middle">
+        <thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Identity</th><th></th></tr></thead>
+        <tbody>
+          {% for candidate in candidates %}
+          <tr>
+            <td>{{ candidate.user.full_name }}</td>
+            <td>{{ candidate.user.email }}</td>
+            <td>{{ candidate.phone or '-' }}</td>
+            <td>{{ candidate.identity_number or '-' }}</td>
+            <td><a class="btn btn-sm btn-outline-primary" href="{{ url_for('recruiter.request_new') }}">Initiate Verification</a></td>
+          </tr>
+          {% else %}
+          <tr><td colspan="5" class="text-muted">No candidates available.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

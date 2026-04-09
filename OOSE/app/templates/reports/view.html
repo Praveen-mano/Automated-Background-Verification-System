@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}Report #{{ verification_request.id }}{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-start mb-3">
+  <div>
+    <h1 class="h3 mb-1">Verification Report #{{ verification_request.id }}</h1>
+    <p class="text-muted mb-0">Generated on {{ verification_request.report.generated_at.strftime('%Y-%m-%d %H:%M') }}</p>
+  </div>
+  <a class="btn btn-primary" href="{{ url_for('reports.report_download', request_id=verification_request.id) }}">Download PDF</a>
+</div>
+
+<div class="card mb-3 report-header-card">
+  <div class="card-body">
+    <div class="row g-3">
+      <div class="col-md-6">
+        <h2 class="h5 mb-3">Candidate Snapshot</h2>
+        <p class="mb-1"><strong>Name:</strong> {{ verification_request.candidate_profile.user.full_name }}</p>
+        <p class="mb-1"><strong>Email:</strong> {{ verification_request.candidate_profile.user.email }}</p>
+        <p class="mb-1"><strong>Phone:</strong> {{ verification_request.candidate_profile.phone or 'Not provided' }}</p>
+        <p class="mb-1"><strong>Identity No:</strong> {{ verification_request.candidate_profile.identity_number or 'Not provided' }}</p>
+      </div>
+      <div class="col-md-6">
+        <h2 class="h5 mb-3">Decision Summary</h2>
+        <p class="mb-2">
+          <strong>Outcome:</strong>
+          <span class="badge text-bg-{% if verification_request.report.overall_status.value == 'completed' %}success{% elif verification_request.report.overall_status.value == 'rejected' %}danger{% else %}warning{% endif %}">
+            {{ verification_request.report.overall_status.value }}
+          </span>
+        </p>
+        <p class="mb-2"><strong>Recommendation:</strong></p>
+        <div class="alert alert-{{ recommendation_class }} py-2 mb-0">{{ recommendation }}</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3 mb-3">
+  <div class="col-6 col-md-2"><div class="card report-metric-card"><div class="card-body"><div class="small text-muted">Stages</div><div class="h4 mb-0">{{ total_stages }}</div></div></div></div>
+  <div class="col-6 col-md-2"><div class="card report-metric-card"><div class="card-body"><div class="small text-muted">Verified</div><div class="h4 mb-0 text-success">{{ verified_count }}</div></div></div></div>
+  <div class="col-6 col-md-2"><div class="card report-metric-card"><div class="card-body"><div class="small text-muted">Rejected</div><div class="h4 mb-0 text-danger">{{ rejected_count }}</div></div></div></div>
+  <div class="col-6 col-md-2"><div class="card report-metric-card"><div class="card-body"><div class="small text-muted">In Progress</div><div class="h4 mb-0 text-warning">{{ in_progress_count }}</div></div></div></div>
+  <div class="col-6 col-md-2"><div class="card report-metric-card"><div class="card-body"><div class="small text-muted">Pending</div><div class="h4 mb-0 text-secondary">{{ pending_count }}</div></div></div></div>
+  <div class="col-6 col-md-2"><div class="card report-metric-card"><div class="card-body"><div class="small text-muted">Completion</div><div class="h4 mb-0">{{ completion_pct }}%</div></div></div></div>
+</div>
+
+<div class="card mb-3">
+  <div class="card-body">
+    <h2 class="h5 mb-3">Stage-by-Stage Findings</h2>
+    <div class="table-responsive">
+      <table class="table table-striped align-middle">
+        <thead><tr><th>Stage</th><th>Status</th><th>Verifier</th><th>Verified At</th><th>Comments</th></tr></thead>
+        <tbody>
+          {% for stage in verification_request.stages %}
+          <tr>
+            <td>{{ stage.stage_type.value|stage_label }}</td>
+            <td>
+              <span class="badge text-bg-{% if stage.status.value == 'verified' %}success{% elif stage.status.value == 'rejected' %}danger{% elif stage.status.value == 'in_progress' %}warning{% else %}secondary{% endif %}">
+                {{ stage.status.value }}
+              </span>
+            </td>
+            <td>{{ stage.verified_by.full_name if stage.verified_by else '-' }}</td>
+            <td>{{ stage.verified_at.strftime('%Y-%m-%d %H:%M') if stage.verified_at else '-' }}</td>
+            <td>{{ stage.comments or '-' }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

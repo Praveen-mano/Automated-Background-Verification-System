@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}{% if user %}Edit User{% else %}Create User{% endif %}{% endblock %}
+{% block content %}
+<h1 class="h3 mb-3">{% if user %}Edit User{% else %}Create User{% endif %}</h1>
+<div class="card">
+  <div class="card-body">
+    <form method="post" class="row g-3">
+      <div class="col-md-6">
+        <label class="form-label">Username</label>
+        <input class="form-control" name="username" value="{{ user.username if user else '' }}" {% if user %}readonly{% endif %} required>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Full Name</label>
+        <input class="form-control" name="full_name" value="{{ user.full_name if user else '' }}" required>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Email</label>
+        <input class="form-control" type="email" name="email" value="{{ user.email if user else '' }}" required>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Role</label>
+        <select class="form-select" name="role">
+          {% for role in roles %}
+            <option value="{{ role.value }}" {% if user and user.role == role %}selected{% endif %}>{{ role.value }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">{% if user %}New Password (optional){% else %}Password{% endif %}</label>
+        <input class="form-control" name="password" type="password" {% if not user %}required{% endif %}>
+      </div>
+      {% if user %}
+      <div class="col-md-6 d-flex align-items-end">
+        <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" id="is_active" name="is_active" {% if user.is_active_user %}checked{% endif %}>
+          <label class="form-check-label" for="is_active">Account Active</label>
+        </div>
+      </div>
+      {% endif %}
+      <div class="col-12">
+        <button class="btn btn-primary" type="submit">Save</button>
+        <a class="btn btn-outline-secondary" href="{{ url_for('admin.user_list') }}">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

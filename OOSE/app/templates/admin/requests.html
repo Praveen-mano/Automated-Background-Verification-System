@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}All Verification Requests{% endblock %}
+{% block content %}
+<h1 class="h3 mb-3">All Verification Requests</h1>
+<div class="card">
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table table-striped align-middle">
+        <thead><tr><th>ID</th><th>Candidate</th><th>Recruiter</th><th>Verifier</th><th>Status</th><th>Created</th><th></th></tr></thead>
+        <tbody>
+          {% for req in requests %}
+          <tr>
+            <td>#{{ req.id }}</td>
+            <td>{{ req.candidate_profile.user.full_name }}</td>
+            <td>{{ req.recruiter.full_name }}</td>
+            <td>{{ req.assigned_verifier.full_name }}</td>
+            <td><span class="badge text-bg-info">{{ req.status.value }}</span></td>
+            <td>{{ req.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+            <td class="d-flex gap-2">
+              {% if req.report %}
+                <a class="btn btn-sm btn-outline-primary" href="{{ url_for('reports.report_view', request_id=req.id) }}">View Report</a>
+              {% else %}
+                <span class="text-muted">Report pending</span>
+              {% endif %}
+              <form method="post" action="{{ url_for('admin.request_delete', request_id=req.id) }}" onsubmit="return confirm('Delete verification request #{{ req.id }}? This cannot be undone.');">
+                <button class="btn btn-sm btn-outline-danger" type="submit">Delete</button>
+              </form>
+            </td>
+          </tr>
+          {% else %}
+          <tr><td colspan="7" class="text-muted">No requests available.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

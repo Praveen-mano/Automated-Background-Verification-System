@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard{% endblock %}
+{% block content %}
+<h1 class="h3 mb-4">Admin Dashboard</h1>
+<div class="row g-3 mb-4">
+  <div class="col-md-3"><div class="card card-metric"><div class="card-body"><h6>Total Users</h6><p class="metric-value">{{ total_users }}</p></div></div></div>
+  <div class="col-md-3"><div class="card card-metric"><div class="card-body"><h6>Total Requests</h6><p class="metric-value">{{ total_requests }}</p></div></div></div>
+  <div class="col-md-2"><div class="card card-metric"><div class="card-body"><h6>Candidates</h6><p class="metric-value">{{ candidate_count }}</p></div></div></div>
+  <div class="col-md-2"><div class="card card-metric"><div class="card-body"><h6>Recruiters</h6><p class="metric-value">{{ recruiter_count }}</p></div></div></div>
+  <div class="col-md-2"><div class="card card-metric"><div class="card-body"><h6>Verifiers</h6><p class="metric-value">{{ verifier_count }}</p></div></div></div>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <h2 class="h5">Latest Verification Requests</h2>
+    <div class="table-responsive">
+      <table class="table table-striped align-middle">
+        <thead><tr><th>ID</th><th>Candidate</th><th>Recruiter</th><th>Verifier</th><th>Status</th><th>Created</th></tr></thead>
+        <tbody>
+          {% for req in latest_requests %}
+          <tr>
+            <td>#{{ req.id }}</td>
+            <td>{{ req.candidate_profile.user.full_name }}</td>
+            <td>{{ req.recruiter.full_name }}</td>
+            <td>{{ req.assigned_verifier.full_name }}</td>
+            <td><span class="badge text-bg-info">{{ req.status.value }}</span></td>
+            <td>{{ req.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+          </tr>
+          {% else %}
+          <tr><td colspan="6" class="text-muted">No verification requests found.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

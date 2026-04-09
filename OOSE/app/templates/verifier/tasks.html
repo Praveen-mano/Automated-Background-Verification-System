@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Verifier Tasks{% endblock %}
+{% block content %}
+<h1 class="h3 mb-3">Assigned Verification Tasks</h1>
+<div class="card">
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table table-striped align-middle">
+        <thead><tr><th>Request</th><th>Candidate</th><th>Status</th><th>Created</th><th></th></tr></thead>
+        <tbody>
+          {% for task in tasks %}
+          <tr>
+            <td>#{{ task.id }}</td>
+            <td>{{ task.candidate_profile.user.full_name }}</td>
+            <td><span class="badge text-bg-info">{{ task.status.value }}</span></td>
+            <td>{{ task.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+            <td><a class="btn btn-sm btn-outline-primary" href="{{ url_for('verifier.task_detail', request_id=task.id) }}">Open</a></td>
+          </tr>
+          {% else %}
+          <tr><td colspan="5" class="text-muted">No assigned tasks.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

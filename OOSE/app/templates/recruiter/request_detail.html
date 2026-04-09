@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}Track Request #{{ verification_request.id }}{% endblock %}
+{% block content %}
+<h1 class="h3 mb-3">Track Verification Request #{{ verification_request.id }}</h1>
+<div class="card mb-3">
+  <div class="card-body">
+    <div class="row g-2">
+      <div class="col-md-6"><strong>Candidate:</strong> {{ verification_request.candidate_profile.user.full_name }}</div>
+      <div class="col-md-6"><strong>Verifier:</strong> {{ verification_request.assigned_verifier.full_name }}</div>
+      <div class="col-md-6"><strong>Status:</strong> <span id="request-status" class="badge text-bg-primary">{{ verification_request.status.value }}</span></div>
+      <div class="col-md-6"><strong>Started:</strong> {{ verification_request.started_at.strftime('%Y-%m-%d %H:%M') if verification_request.started_at else '-' }}</div>
+    </div>
+    <hr>
+    <div class="d-flex gap-2">
+      {% if verification_request.report %}
+        <a class="btn btn-success" href="{{ url_for('reports.report_view', request_id=verification_request.id) }}">Open Report</a>
+      {% endif %}
+      <form method="post" action="{{ url_for('recruiter.request_delete', request_id=verification_request.id) }}" onsubmit="return confirm('Delete verification request #{{ verification_request.id }}? This cannot be undone.');">
+        <button class="btn btn-outline-danger" type="submit">Delete Request</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <h2 class="h5">Stage Timeline</h2>
+    <div class="table-responsive">
+      <table class="table table-striped">
+        <thead><tr><th>Stage</th><th>Status</th><th>Comments</th><th>Verified At</th></tr></thead>
+        <tbody id="stage-table-body">
+          {% for stage in verification_request.stages %}
+          <tr data-stage-id="{{ stage.id }}">
+            <td>{{ stage.stage_type.value|stage_label }}</td>
+            <td class="stage-status">{{ stage.status.value }}</td>
+            <td class="stage-comments">{{ stage.comments or '-' }}</td>
+            <td class="stage-verified">{{ stage.verified_at.strftime('%Y-%m-%d %H:%M') if stage.verified_at else '-' }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  async function refreshRequestStatus() {
+    const response = await fetch("{{ url_for('main.request_status_api', request_id=verification_request.id) }}");
+    if (!response.ok) return;
+    const data = await response.json();
+    document.getElementById("request-status").textContent = data.status;
+
+    for (const row of document.querySelectorAll("#stage-table-body tr")) {
+      const stageId = Number(row.dataset.stageId);
+      const stage = data.stages.find((item) => item.id === stageId);
+      if (!stage) continue;
+      row.querySelector(".stage-status").textContent = stage.status;
+      row.querySelector(".stage-comments").textContent = stage.comments || "-";
+      row.querySelector(".stage-verified").textContent = stage.verified_at || "-";
+    }
+  }
+
+  setInterval(refreshRequestStatus, 12000);
+</script>
+{% endblock %}
